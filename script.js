@@ -89,7 +89,6 @@ function alterarTextoBanner(contexto) {
 // Ativa ou desativa musica 
 btMusica.addEventListener("change", () =>
 {
-    console.log("ativo")
     if (musica.paused) {
         musica.play();
     }
@@ -127,13 +126,10 @@ function contagemRegressiva() {
 
     intervalo = setInterval(() => {
         temporizador -= 1;
-        // deve ser atualizado de acordo com o valor do timer
-        timerTexto
         console.log(temporizador);
 
         if (temporizador <= 0) {
-            clearInterval(intervalo);
-            intervalo = null;
+            zerar();
         }
     }, 1 * 1000)
 
@@ -141,10 +137,14 @@ function contagemRegressiva() {
 
 btStartPause.addEventListener("click", () => {
 
+    if (intervalo){
+        zerar();
+    }
     contagemRegressiva();
-
-    const textoStartPause
-    btStartPause.innerHTML = `img class="app__card-primary-butto-icon" src="assets/imgs/play_arrow.png" 
-    alt=""> <span>Pause</span>`
+    
 });
 
+function zerar() {
+    clearInterval(intervalo);
+    intervalo = null;
+}
