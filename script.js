@@ -11,15 +11,19 @@ const btLongo = document.querySelector(".app__card-button--longo");
 
 // Define temporizador
 const btStartPause = document.querySelector("#start-pause");
-let temporizador = 0;
+let temporizador = new Date();
 let intervalo = null;
 const timerTexto = document.querySelector("#timer");
-timerTexto.innerHTML = defineTempo();
+defineTempo();
 
 // Define musica
 const btMusica = document.querySelector(".toggle");
 const musica = new Audio("assets/audio/luna-rise-part-one.mp3");
 musica.loop = true;
+
+const pauseAudio = new Audio("assets/audio/pause.mp3");
+const playAudio = new Audio("assets/audio/play.wav");
+const beep = new Audio("assets/audio/beep.mp3");
 
 
 btFoco.addEventListener("click", () => {
@@ -28,7 +32,8 @@ btFoco.addEventListener("click", () => {
 
     btFoco.classList.add("active");
 
-    timerTexto.innerHTML = defineTempo();
+    pausarContador();
+    defineTempo();
 
 })
 
@@ -38,7 +43,8 @@ btCurto.addEventListener("click", () => {
 
     btCurto.classList.add("active");
 
-    timerTexto.innerHTML = defineTempo();
+    pausarContador();
+    defineTempo();
 
 })
 
@@ -48,8 +54,9 @@ btLongo.addEventListener("click", () => {
 
     btLongo.classList.add("active");
 
-    timerTexto.innerHTML = defineTempo();
-   
+    defineTempo();
+    pausarContador();
+
 
 })
 
@@ -98,53 +105,77 @@ btMusica.addEventListener("change", () =>
 })
 
 
-// Define o tempo do timer com base no contexto atual
+// Define o tempo do timer e o texto;
 function defineTempo() {
     let contextoAtual = html.getAttribute("data-contexto");
 
     switch (contextoAtual) {
         case "foco":
-            temporizador = 40;
+            temporizador = 40 * 60; // Declarado em segundos;
             break;
         case "descanso-curto":
-            temporizador = 10;
+            temporizador = 10 * 60;
             break;
         case "descanso-longo":
-            temporizador = 15;
+            temporizador = 15 * 60;
             break;
         default:
             break;
     }
+    atualizarDisplay();
     return temporizador;
+}
+
+function atualizarDisplay() {
+
+    const minutos = Math.floor(temporizador / 60);
+    const segundos = temporizador % 60;
+
+    const minutosFormatado = String(minutos).padStart(2, '0');
+    const segundosFormatado = String(segundos).padStart(2, '0');
+
+    timerTexto.innerHTML = `${minutosFormatado}:${segundosFormatado}`;
 }
 
 function contagemRegressiva() {
 
     if (intervalo) return;
 
-    temporizador = defineTempo();
-
     intervalo = setInterval(() => {
         temporizador -= 1;
-        console.log(temporizador);
-
+        atualizarDisplay();
+        
         if (temporizador <= 0) {
-            zerar();
+            beep.play();
+            pausarContador();
+            
         }
-    }, 1 * 1000)
+    }, 1 * 1000)//executa a função a cada 1 segundo)
 
 }
-
-btStartPause.addEventListener("click", () => {
-
-    if (intervalo){
-        zerar();
-    }
-    contagemRegressiva();
-    
-});
-
-function zerar() {
+function pausarContador() {
     clearInterval(intervalo);
     intervalo = null;
 }
+
+btStartPause.addEventListener("click", () => {
+    // Insere audio ao clicar no botão
+   
+    // Muda o texto do botão
+    btStartPause.innerHTML = `<img class="app__card-primary-butto-icon" src="assets/imgs/pause.png" alt=""><span>Pausar</span>`
+    if (intervalo) {
+        btStartPause.innerHTML = `<img class="app__card-primary-butto-icon" src="assets/imgs/play_arrow.png" alt=""><span>Começar</span>`
+        pausarContador();
+        pauseAudio.play();
+    } else {
+        if (temporizador <= 0)
+        {
+            temporizador = defineTempo();
+        }
+        playAudio.play();
+        contagemRegressiva();
+    }
+    
+
+});
+
