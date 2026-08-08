@@ -1,5 +1,7 @@
 # Pomodoro Timer
 
+![Preview do projeto](./assets/screenshot/home.png)
+
 Um cronômetro Pomodoro simples, desenvolvido na semana 10 no Include Alura.
 
 ## 📖 Sobre o projeto
